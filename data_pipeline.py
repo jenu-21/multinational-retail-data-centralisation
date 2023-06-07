@@ -1,10 +1,6 @@
 from database_utils import DatabaseConnector
 from data_extraction import DataExtractor
 from data_cleaning import DataCleaning
-import psycopg2
-import yaml
-import pandas as pd 
-from sqlalchemy import create_engine, inspect
 
 # Create instances of necessary classes
 db_connector = DatabaseConnector()
