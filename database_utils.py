@@ -3,19 +3,19 @@ import psycopg2
 from sqlalchemy import create_engine, inspect
 
 class DatabaseConnector:
-    def read_db_creds(self, config_file):
+    def read_db_creds(self,  config_file ='db_creds.yaml'):
             with open(config_file, 'r') as f:
                 config = yaml.safe_load(f)
             return config
        
-    def init_db_engine(self, config_file):
-        credentials = self.read_db_creds(config_file)
-        db_url = f"postgresql://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
+    def init_db_engine(self):
+        credentials = self.read_db_creds()
+        db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
         engine = create_engine(db_url)
-        return engine.connect() 
+        return engine
 
-    def list_db_tables(self, config_file):
-        engine = self.init_db_engine(config_file)
+    def list_db_tables(self):
+        engine = self.init_db_engine()
         inspector = inspect(engine)
         tables = inspector.get_table_names()
         return tables
