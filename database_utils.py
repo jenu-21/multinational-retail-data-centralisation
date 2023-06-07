@@ -12,7 +12,7 @@ class DatabaseConnector:
         credentials = self.read_db_creds(config_file)
         db_url = f"postgresql://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
         engine = create_engine(db_url)
-        return engine 
+        return engine.connect() 
 
     def list_db_tables(self, config_file):
         engine = self.init_db_engine(config_file)
