@@ -1,4 +1,5 @@
 import pandas as pd
+from sqlalchemy import create_engine, inspect
 
 class DataExtractor:            
     def read_rds_table(self, db_connector, table_name):
