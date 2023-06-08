@@ -24,9 +24,8 @@ class DataCleaning:
     
     def clean_store_data(self, df):
         cleaned_data = df.copy()
-
-        cleaned_data.drop_duplicates(inplace = True)
-
+        cleaned_data.drop_duplicates(inplace=True)
+        
         return cleaned_data
     
 
