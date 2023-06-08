@@ -12,7 +12,15 @@ class DatabaseConnector:
         credentials = self.read_db_creds()
         db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
         engine = create_engine(db_url)
+        engine.connect()
         return engine
+            
+    def connect(self):
+        try:
+            self.conn = self.engine.connect()
+            print("Connected to the database successfully!")
+        except Exception as e:
+            print(f"Failed to connect to the database. Error: {e}")
 
     def list_db_tables(self):
         engine = self.init_db_engine()
@@ -22,9 +30,13 @@ class DatabaseConnector:
 
     def upload_to_db(self, df, table_name):
         try:
-            with self.engine.begin() as connection:
-                df.to_sql(table_name, connection, if_exists = 'replace', index=False)
-            print(f"Data uploaded to the '{table_name}' table successfully!")       
+            credentials = self.read_db_creds('local_creds.yaml')
+            db_url = f"postgresql+psycopg2://{credentials['RDS_USER']}:{credentials['RDS_PASSWORD']}@{credentials['RDS_HOST']}:{credentials['RDS_PORT']}/{credentials['RDS_DATABASE']}"
+            engine = create_engine(db_url)
+           
+            with engine.connect() as connection:
+                df.to_sql(name = table_name, con = engine, if_exists = 'replace', index=False)
+                             
         except Exception as e:
             print(f"Failed to upload data to the '{table_name}' table. Error {e}")
 
