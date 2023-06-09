@@ -28,6 +28,39 @@ class DataCleaning:
         
         return cleaned_data
     
+    def convert_product_weights(self, df):
+        df['weight'] = df['weight'].str.replace(r'\D', '', regex=True).astype(float)
+        df.loc[df['weight'] == 'ml', 'weight'] *= 1 # Convert ml to g using 1:1 ratio
+
+        return df
+    
+    def clean_products_data(self,df):
+        df = df.drop_duplicates()
+        df = df.dropna()
+
+        return df 
+    
+    def clean_orders_data(self, orders_data):
+
+        columns_to_remove = ['first_name', 'last_name', '1']
+        cleaned_orders_data = orders_data.drop(columns = columns_to_remove)
+
+        return cleaned_orders_data
+    
+    def clean_date_data(self, date_data):
+        cleaned_date_data = date_data.copy()
+
+        cleaned_date_data.dropna(inplace = True)
+
+        return cleaned_date_data
+   
+    
+    
+    
+    
+
+
+    
 
     
 
