@@ -1,4 +1,5 @@
 import pandas as pd
+import uuid
 
 class DataCleaning: 
     def clean_user_data(self, df):
@@ -41,9 +42,12 @@ class DataCleaning:
         return df 
     
     def clean_orders_data(self, orders_data):
-
         columns_to_remove = ['first_name', 'last_name', '1']
-        cleaned_orders_data = orders_data.drop(columns = columns_to_remove)
+        cleaned_orders_data = orders_data.drop(columns=columns_to_remove)
+
+        cleaned_orders_data['date_uuid'] = cleaned_orders_data['date_uuid'].astype('object')
+        cleaned_orders_data['user_uuid'] = cleaned_orders_data['user_uuid'].astype('object')
+
 
         return cleaned_orders_data
     
