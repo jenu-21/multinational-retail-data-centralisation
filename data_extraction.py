@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, text
+import sqlalchemy
 import pandas as pd
 import tabula.io as tabula
 import requests
@@ -8,11 +9,22 @@ class DataExtractor:
 
     def read_rds_table(self, db_connector, table_name):
         engine = db_connector.init_db_engine()
-        query = f'SELECT * FROM {table_name}'
+        query = sqlalchemy.text(f'SELECT * FROM {table_name}')
 
-        df = pd.read_sql_query(sql=text(query), con=engine.connect())
-        df = pd.read_sql_table(table_name, con = engine, index_col = 'index')
+        with engine.connect() as connection:
+            result = connection.execute(query)
+            column_names = result.keys()
+            rows = result.fetchall()
+            df = pd.DataFrame(rows, columns=column_names)
+            df.to_csv('dirty_users.csv')
+        
         return df
+
+        
+        
+        # df = pd.read_sql_query(sql=text(query), con=engine.connect())
+        # df = pd.read_sql_table(table_name, con = engine, index_col = 'index')
+        # return df
     
     def retrieve_pdf_data(self, link):
         pdf_wrapper = tabula.read_pdf(link, pages = 'all', multiple_tables = True)
@@ -52,30 +64,30 @@ class DataExtractor:
 
     
     
-    def extract_from_s3(self, s3_address):
-        bucket_name, key = self.parse_s3_address(s3_address)
+    # def extract_from_s3(self, s3_address):
+    #     bucket_name, key = self.parse_s3_address(s3_address)
 
-        session = boto3.Session()
-        s3_client = session.client('s3')
+    #     session = boto3.Session()
+    #     s3_client = session.client('s3')
 
-        local_file_path = 'products.csv'
-        print(f"Local file path: {local_file_path}")
+    #     local_file_path = 'products.csv'
+    #     print(f"Local file path: {local_file_path}")
 
-        s3_client.download_file(bucket_name, key, local_file_path)
-        print(f"File downloaded from S3")
+    #     s3_client.download_file(bucket_name, key, local_file_path)
+    #     print(f"File downloaded from S3")
 
-        df = pd.read_csv('products.csv')
+    #     df = pd.read_csv('products.csv')
         
-        return df
+    #     return df
     
-    def parse_s3_address(self, s3_address):
+    # def parse_s3_address(self, s3_address):
         
-        s3_address = s3_address.replace('s3://', '')
-        parts = s3_address.split('/', 1)
-        bucket_name = parts[0]
-        key = parts[1] if len(parts) > 1 else ''
+    #     s3_address = s3_address.replace('s3://', '')
+    #     parts = s3_address.split('/', 1)
+    #     bucket_name = parts[0]
+    #     key = parts[1] if len(parts) > 1 else ''
 
-        return bucket_name, key
+    #     return bucket_name, key
 
     def extract_from_s3(self, s3_address):
         try:
