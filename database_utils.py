@@ -40,7 +40,4 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Failed to upload data to the '{table_name}' table. Error {e}")
 
-
-
-
     
