@@ -16,7 +16,9 @@ class DataExtractor:
             column_names = result.keys()
             rows = result.fetchall()
             df = pd.DataFrame(rows, columns=column_names)
-            df.to_csv('dirty_users.csv')
+            # df = pd.read_sql_query(sql=text(query), con=engine.connect())
+            # df = pd.read_sql_table(table_name, con = engine, index_col = 'index')
+            # df.to_csv('dirty_users.csv')
         
         return df
 
@@ -34,8 +36,8 @@ class DataExtractor:
     def __init__(self):
         self.headers = {'x-api-key': 'yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX'}
     
-    def list_number_of_stores(self, endpoint, headers):
-        response = requests.get(endpoint, headers=headers)
+    def list_number_of_stores(self, number_of_stores_endpoint, headers):
+        response = requests.get(number_of_stores_endpoint, headers=headers)
         print(f"Response: {response.json()}")
         if response.status_code == 200:
             number_of_stores = response.json().get('number_stores')
@@ -50,7 +52,7 @@ class DataExtractor:
             return None
         
         stores_data = []
-        for store_number in range(1, number_of_stores + 1):
+        for store_number in range(0, number_of_stores + 1):
             url = store_endpoint.format(store_number)
             response = requests.get(url, headers = headers)
             if response.status_code == 200:
