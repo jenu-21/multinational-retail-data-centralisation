@@ -9,6 +9,9 @@ import re
 class DataCleaning: 
     def __init__(self):
         self.db_connector = DatabaseConnector()
+    
+    def isDigits(self,num):
+        return str(num) if str(num).isdigit() else np.nan
 
 
     def clean_user_data(self, df):
@@ -24,7 +27,8 @@ class DataCleaning:
         cleaned_data=cleaned_data[cleaned_data['country_code'].isin(['GB','US','DE'])]
         cleaned_data['phone_number'] = cleaned_data['phone_number'].replace({'239.711.3836': '2397113836'})
 
-        print(cleaned_data['phone_number'].unique())
+        # unique_data = cleaned_data['date_of_birth'].unique()
+        # print(unique_data)
         cleaned_data.to_csv('clean_users.csv')
 
         return cleaned_data
@@ -32,7 +36,8 @@ class DataCleaning:
     def clean_card_data(self, df):
         cleaned_data = df.copy()
 
-        cleaned_data['card_number'] = cleaned_data['card_number'].apply(lambda x: re.sub(r'\D', '', str(x)))
+        cleaned_data['card_number'] = cleaned_data['card_number'].apply(str)
+        cleaned_data['card_number'] = cleaned_data['card_number'].str.replace('?','')
 
         # Remove rows with invalid card_number length
         cleaned_data = cleaned_data[cleaned_data['card_number'].apply(lambda x: len(x) == 16)]
@@ -44,7 +49,7 @@ class DataCleaning:
 
         # unique_data = cleaned_data['card_provider'].unique()
         # print(unique_data)
-        # cleaned_data.to_csv('clean_card.csv') 
+        cleaned_data.to_csv('clean_card.csv') 
         
         return cleaned_data
     
@@ -58,18 +63,11 @@ class DataCleaning:
         unique_values_to_clean = ['NULL', '6FWDZHD7PW', '1ZVU03X2P6', '13KJZ890JH', '9IBH8Y4Z0S', 'NRQKZWJ9OZ', 'BIP8K8JJW2', 'ZCXWWKF45G', 'QP74AHEQT0', '1CJ5OAU4BR', 'YELVM536YT', 'QMAVR5H3LD', 'UBCIFQLSNY', 'Q1TJY8H1ZH', '2XE1OWOC23', '1T6B406CI8', 'QIUU9SVP51', 'SKBXAXF5G5', '7AHXLXIUEF', 'O0QJIRC943', '3ZR3F89D97', 'FP8DLXQVGH', 'LU3E036ZD9', 'RC99UKMZB2', '2YBZ1440V6', 'OXVE5QR07O', '6LVWPU1G64', 'Y8J0Z2W8O9', '2429OB3LMM', '0OLAK2I6NS', '50IB01SFAZ', 'L13EQEQODP', 'HMHIFNLOBN', '5586JCLARW', 'X349GIDWKU', 'O7NF1FZ74Y', 'VKA5I8H32X', 'RX9TCP2RGB', 'ISEE8A57FE',  '74BY7HSB6P',  'A3PMVM800J', '0RSNUU3DF5',  'J3BPB68Z1J', 'F3AO8V2LHU', 'GFJQ2AAEQ8', 'ZBGB54ID4H', 'SKO4NMRNNF',  'LACCWDI0SB', 'CQMHKI78BX', 'T0R2CQBDUS', 'GT1FO6YGD4', 'GMMB02LA9V', 'B4KVQB3P5Y', 'AJHOMDOHZ4', 'OH20I92LX3', 'SLQBD982C0', 'XTUAV57DP4', 'ID819KG3X5', 'A3O5CBWAMD', 'RY6K0AUE7F', 'TUOKF5HAAQ', 'FRTGHAA34B', '13PIY8GD1H',  'X0FE7E2EOG', 'AE7EEW4HSS', 'OYVW925ZL8', 'XQ953VS0FG', 'K0ODETRLS3', 'K8CXLZDP07', 'UXMWDMX1LC', '3VHFDNP8ET',	'9D4LK7X4LZ', 'D23PCWSM6S', '36IIMAQD58', 'NN04B3F6UQ',	'JZP8MIJTPZ', 'B3EH2ZGQAV', '1WZB1TE1HL',]
         cleaned_data.replace(unique_values_to_clean, pd.NA, inplace=True)
 
-        cleaned_data.dropna(how = 'all', inplace=True)
-
-        cleaned_data['address'] = cleaned_data['address'].str.strip()
-        cleaned_data['longitude'] = cleaned_data['longitude'].str.strip()
-        cleaned_data['latitude'] = cleaned_data['latitude'].str.strip()
-        cleaned_data['locality'] = cleaned_data['locality'].str.strip()
-        cleaned_data['store_code'] = cleaned_data['store_code'].str.strip()
-        cleaned_data['store_type'] = cleaned_data['store_type'].str.strip()
-        cleaned_data['country_code'] = cleaned_data['country_code'].str.strip()
         cleaned_data['continent'] = cleaned_data['continent'].str.strip()
         cleaned_data['continent'] = cleaned_data['continent'].replace({'eeEurope': 'Europe'})
         cleaned_data['continent'] = cleaned_data['continent'].replace({'eeAmerica': 'America'})
+        
+        cleaned_data.dropna(how = 'any', inplace=True)
         # cleaned_data.to_csv('dirty_store.csv')
 
         return cleaned_data
@@ -97,8 +95,17 @@ class DataCleaning:
     
     
     def clean_orders_data(self, orders_data):
-        columns_to_remove = ['first_name', 'last_name', '1']
-        cleaned_orders_data = orders_data.drop(columns=columns_to_remove)
+        cleaned_orders_data = orders_data.copy()
+       
+        cleaned_orders_data.drop(columns = '1', inplace=True)
+        cleaned_orders_data.drop(columns = 'first_name', inplace=True)
+        cleaned_orders_data.drop(columns = 'last_name', inplace=True)
+        cleaned_orders_data.drop(columns = 'level_0', inplace=True)
+        cleaned_orders_data['card_number'] = cleaned_orders_data['card_number'].apply(self.isDigits)
+
+        cleaned_orders_data.dropna(how = 'all', inplace=True)
+        # columns_to_remove = ['first_name', 'last_name', '1', 'level_0']
+        cleaned_orders_data.to_csv('clean_orders_data.csv')
 
         return cleaned_orders_data
     
