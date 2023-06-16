@@ -66,30 +66,30 @@ class DataExtractor:
 
     
     
-    # def extract_from_s3(self, s3_address):
-    #     bucket_name, key = self.parse_s3_address(s3_address)
+    def extract_from_s3(self, s3_address):
+        bucket_name, key = self.parse_s3_address(s3_address)
 
-    #     session = boto3.Session()
-    #     s3_client = session.client('s3')
+        session = boto3.Session()
+        s3_client = session.client('s3')
 
-    #     local_file_path = 'products.csv'
-    #     print(f"Local file path: {local_file_path}")
+        local_file_path = 'products.csv'
+        print(f"Local file path: {local_file_path}")
 
-    #     s3_client.download_file(bucket_name, key, local_file_path)
-    #     print(f"File downloaded from S3")
+        s3_client.download_file(bucket_name, key, local_file_path)
+        print(f"File downloaded from S3")
 
-    #     df = pd.read_csv('products.csv')
+        df = pd.read_csv('products.csv')
         
-    #     return df
+        return df
     
-    # def parse_s3_address(self, s3_address):
+    def parse_s3_address(self, s3_address):
         
-    #     s3_address = s3_address.replace('s3://', '')
-    #     parts = s3_address.split('/', 1)
-    #     bucket_name = parts[0]
-    #     key = parts[1] if len(parts) > 1 else ''
+        s3_address = s3_address.replace('s3://', '')
+        parts = s3_address.split('/', 1)
+        bucket_name = parts[0]
+        key = parts[1] if len(parts) > 1 else ''
 
-    #     return bucket_name, key
+        return bucket_name, key
 
     def extract_from_s3(self, s3_address):
         try:
