@@ -35,8 +35,8 @@ headers = {'x-api-key': 'yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX'}
 
 number_of_stores = data_extractor.list_number_of_stores(number_of_stores_endpoint, headers)
 if number_of_stores is None:    
-    print("Unable to retreive the number of stores. Exiting...")
-    exit()
+   print("Unable to retreive the number of stores. Exiting...")
+   exit()
 
 print(f"Number of stores to extract: {number_of_stores}")
 
@@ -62,10 +62,10 @@ table_name = 'dim_card_details'
 db_connector.upload_to_db(cleaned_data , table_name)
 
 
-users_table_name = 'legacy_users'
-users_data = data_extractor.read_rds_table(db_connector, users_table_name)
+table_name = 'dim_users'
+users_data = data_extractor.read_rds_table(db_connector, table_name)
 cleaned_users_data = data_cleaner.clean_user_data(users_data)
-db_connector.upload_to_db(cleaned_users_data, users_table_name)
+db_connector.upload_to_db(cleaned_users_data, table_name)
 
 
 
