@@ -61,7 +61,6 @@ cleaned_data = data_cleaner.clean_card_data(pdf_data)
 table_name = 'dim_card_details'
 db_connector.upload_to_db(cleaned_data , table_name)
 
-
 table_name = 'dim_users'
 users_data = data_extractor.read_rds_table(db_connector, table_name)
 cleaned_users_data = data_cleaner.clean_user_data(users_data)
