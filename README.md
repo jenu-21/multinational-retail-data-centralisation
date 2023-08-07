@@ -23,5 +23,5 @@
 
 ## SQL Queries
 ##### Once we have uploaded the extracted and cleaned data, and primary and foreign keys are settled, we then proceed to head to my local database under pgAdmin4 where through PostgreSQL we proceed to fulfil the SQL query tasks set.
-[sql_results](sql_results)
+[sql_results](sql_queries.md)
 
